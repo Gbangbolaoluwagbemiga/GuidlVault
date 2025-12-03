@@ -7,6 +7,7 @@ import { useAccount, useDisconnect } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Link from "next/link";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Navbar() {
   const { open } = useAppKit();
@@ -58,6 +59,7 @@ export function Navbar() {
               Submit
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300" />
             </Link>
+            <ThemeToggle />
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={() => open()}
@@ -110,9 +112,12 @@ export function Navbar() {
             >
               Submit
             </Link>
-            <Button onClick={() => open()} className="w-full">
-              {isConnected ? "Disconnect" : "Connect Wallet"}
-            </Button>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <Button onClick={() => open()} className="flex-1">
+                {isConnected ? "Disconnect" : "Connect Wallet"}
+              </Button>
+            </div>
           </div>
         </motion.div>
       )}
