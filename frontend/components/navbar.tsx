@@ -36,34 +36,43 @@ export function Navbar() {
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             <Link
               href="/vaults"
-              className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all font-medium hover:scale-105 relative group"
             >
               Vaults
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
               href="/create"
-              className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all font-medium hover:scale-105 relative group"
             >
               Create Vault
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
               href="/submit"
-              className="text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+              className="text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all font-medium hover:scale-105 relative group"
             >
               Submit
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300" />
             </Link>
-            <Button
-              onClick={() => open()}
-              variant={isConnected ? "outline" : "default"}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-            >
-              {isConnected
-                ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
-                : "Connect Wallet"}
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={() => open()}
+                variant={isConnected ? "outline" : "default"}
+                className={`font-semibold shadow-lg ${
+                  isConnected
+                    ? "border-2 border-indigo-300 dark:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
+                    : "bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 animate-pulse-glow"
+                }`}
+              >
+                {isConnected
+                  ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                  : "Connect Wallet"}
+              </Button>
+            </motion.div>
           </div>
 
           <button

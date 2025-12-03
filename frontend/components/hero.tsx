@@ -115,14 +115,19 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto"
+          className="text-xl md:text-2xl text-slate-700 dark:text-slate-200 mb-12 max-w-3xl mx-auto leading-relaxed"
         >
           The first decentralized bug bounty platform on Celo. Protocols create
           vaults, researchers submit vulnerabilities, and trusted judges verify
           submissions.
-          <span className="block mt-2 text-lg font-semibold text-indigo-600 dark:text-indigo-400">
-            Only 2.5% platform fee • No censorship • Fully transparent
-          </span>
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="block mt-4 text-lg font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+          >
+            ✨ Only 2.5% platform fee • 🛡️ No censorship • 👁️ Fully transparent
+          </motion.span>
         </motion.p>
 
         <motion.div
@@ -168,25 +173,26 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+          className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
         >
           {[
-            { label: "Active Vaults", value: "12+" },
-            { label: "Total Bounties", value: "$50K+" },
-            { label: "Researchers", value: "200+" },
+            { label: "Active Vaults", value: "12+", icon: "🛡️", color: "from-blue-500 to-cyan-500" },
+            { label: "Total Bounties", value: "$50K+", icon: "💰", color: "from-purple-500 to-pink-500" },
+            { label: "Researchers", value: "200+", icon: "👥", color: "from-indigo-500 to-purple-500" },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
-              className="text-center"
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="text-center p-6 rounded-2xl glass backdrop-blur-md border border-white/20 shadow-xl hover:shadow-2xl transition-all"
             >
-              <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400">
+              <div className={`text-4xl mb-2 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent font-extrabold`}>
                 {stat.value}
               </div>
-              <div className="text-slate-600 dark:text-slate-400 mt-1">
-                {stat.label}
+              <div className="text-lg font-semibold text-slate-700 dark:text-slate-300 mt-2">
+                {stat.icon} {stat.label}
               </div>
             </motion.div>
           ))}
