@@ -4,9 +4,18 @@ async function main() {
   console.log("Deploying VaultGuard...");
 
   // Get deployer account
-  const [deployer] = await hre.ethers.getSigners();
+  const signers = await hre.ethers.getSigners();
+  if (signers.length === 0) {
+    throw new Error(
+      "No signers available. Please set PRIVATE_KEY in .env file"
+    );
+  }
+  const deployer = signers[0];
   console.log("Deploying contracts with account:", deployer.address);
-  console.log("Account balance:", (await hre.ethers.provider.getBalance(deployer.address)).toString());
+  console.log(
+    "Account balance:",
+    (await hre.ethers.provider.getBalance(deployer.address)).toString()
+  );
 
   // Deployment parameters
   // Platform wallet receives the 2.5% platform fee

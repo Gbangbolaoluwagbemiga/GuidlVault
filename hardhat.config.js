@@ -35,7 +35,9 @@ module.exports = {
       chainId: 8453,
     },
     celoAlfajores: {
-      url: process.env.CELO_ALFAJORES_RPC_URL || "https://alfajores-forno.celo-testnet.org",
+      url:
+        process.env.CELO_ALFAJORES_RPC_URL ||
+        "https://alfajores-forno.celo-testnet.org",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 44787,
     },
@@ -95,4 +97,3 @@ module.exports = {
     artifacts: "./artifacts",
   },
 };
-
