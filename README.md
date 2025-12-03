@@ -192,12 +192,20 @@ vaultGuard.claimPayout(submissionId);
 - Explorer: https://celoscan.io/address/0x7C1486c50A729DDbf5a812C490a075053522EE43
 - Platform Fee: 2.5% (250 basis points)
 
+**Base Mainnet:**
+
+- Contract Address: `0x9B1A83cE71a3AC986e5646E500b9257260Bd4D4b`
+- Explorer: https://basescan.org/address/0x9B1A83cE71a3AC986e5646E500b9257260Bd4D4b#code
+- Platform Fee: 2.5% (250 basis points)
+
 ### Network Information
 
 | Network        | Chain ID | Explorer                                            | RPC URL                                  |
 | -------------- | -------- | --------------------------------------------------- | ---------------------------------------- |
 | Celo Mainnet   | 42220    | [CeloScan](https://celoscan.io)                     | https://forno.celo.org                   |
 | Celo Alfajores | 44787    | [CeloScan Alfajores](https://alfajores.celoscan.io) | https://alfajores-forno.celo-testnet.org |
+| Base Mainnet   | 8453     | [BaseScan](https://basescan.org)                    | https://mainnet.base.org                 |
+| Base Sepolia   | 84532    | [BaseScan Sepolia](https://sepolia.basescan.org)    | https://sepolia.base.org                 |
 
 ---
 

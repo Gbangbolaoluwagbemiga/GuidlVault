@@ -11,8 +11,12 @@
     "deploy:base": "hardhat run scripts/deploy.js --network baseSepolia",
     "deploy:celo:alfajores": "hardhat run scripts/deploy.js --network celoAlfajores",
     "deploy:celo:mainnet": "hardhat run scripts/deploy.js --network celo",
+    "deploy:base:sepolia": "hardhat run scripts/deploy.js --network baseSepolia",
+    "deploy:base:mainnet": "hardhat run scripts/deploy.js --network base",
     "verify:celo:alfajores": "hardhat verify --network celoAlfajores",
-    "verify:celo:mainnet": "hardhat verify --network celo"
+    "verify:celo:mainnet": "hardhat verify --network celo",
+    "verify:base:sepolia": "hardhat verify --network baseSepolia",
+    "verify:base:mainnet": "hardhat verify --network base"
   },
   "keywords": [
     "solidity",
