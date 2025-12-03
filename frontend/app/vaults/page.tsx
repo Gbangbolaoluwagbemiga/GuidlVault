@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useEthersProvider } from "@reown/appkit-adapter-ethers";
+import { usePublicClient } from "wagmi";
 import { ethers } from "ethers";
 import { Shield, DollarSign, Users, TrendingUp, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,17 +19,18 @@ import { VAULT_GUARD_ADDRESS, VAULT_GUARD_ABI } from "@/lib/contract";
 import Link from "next/link";
 
 export default function Vaults() {
-  const provider = useEthersProvider();
+  const publicClient = usePublicClient();
   const [vaults, setVaults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadVaults();
-  }, [provider]);
+  }, [publicClient]);
 
   const loadVaults = async () => {
-    if (!provider) return;
+    if (!publicClient) return;
     try {
+      const provider = new ethers.BrowserProvider(publicClient as any);
       const contract = new ethers.Contract(
         VAULT_GUARD_ADDRESS,
         VAULT_GUARD_ABI,

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useAccount } from "wagmi";
-import { useEthersProvider, useEthersSigner } from "@reown/appkit-adapter-ethers";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { ethers } from "ethers";
 import { Shield, Plus, Users, Percent } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,8 +21,8 @@ import { toast } from "sonner";
 
 export default function CreateVault() {
   const { address, isConnected } = useAccount();
-  const provider = useEthersProvider();
-  const signer = useEthersSigner();
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     deposit: "",
@@ -46,7 +45,7 @@ export default function CreateVault() {
   };
 
   const createVault = async () => {
-    if (!isConnected || !signer) {
+    if (!isConnected || !walletClient) {
       toast.error("Please connect your wallet");
       return;
     }
@@ -64,10 +63,12 @@ export default function CreateVault() {
 
     try {
       setLoading(true);
-      if (!signer) {
-        toast.error("Signer not available");
+      if (!publicClient || !walletClient) {
+        toast.error("Wallet not available");
         return;
       }
+      const provider = new ethers.BrowserProvider(walletClient as any);
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(
         VAULT_GUARD_ADDRESS,
         VAULT_GUARD_ABI,
