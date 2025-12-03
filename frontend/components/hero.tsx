@@ -84,10 +84,15 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 mb-8"
+          className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-md border border-indigo-200/50 dark:border-indigo-800/50 text-indigo-600 dark:text-indigo-400 mb-8 shadow-lg animate-pulse-glow"
         >
-          <Sparkles className="h-4 w-4" />
-          <span className="text-sm font-medium">
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+          >
+            <Sparkles className="h-5 w-5 text-indigo-500" />
+          </motion.div>
+          <span className="text-sm font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Decentralized Bug Bounty Platform
           </span>
         </motion.div>
