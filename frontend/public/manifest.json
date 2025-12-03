@@ -1,6 +1,6 @@
 {
-  "name": "SecureFlow - Trustless Escrow on Base",
-  "short_name": "SecureFlow",
+  "name": "VaultGuard - Decentralized Bug Bounty Platform",
+  "short_name": "VaultGuard",
   "description": "Trustless payments with transparent milestones powered by Base",
   "start_url": "/",
   "display": "standalone",
