@@ -42,26 +42,26 @@ export function Stats() {
               initial={{ opacity: 0, scale: 0.7, y: 30, rotate: -10 }}
               whileInView={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
               viewport={{ once: true }}
-              transition={{ 
-                duration: 0.7, 
-                delay: index * 0.15, 
-                type: "spring", 
+              transition={{
+                duration: 0.7,
+                delay: index * 0.15,
+                type: "spring",
                 stiffness: 150,
-                damping: 12
+                damping: 12,
               }}
-              whileHover={{ 
-                scale: 1.12, 
-                y: -10, 
+              whileHover={{
+                scale: 1.12,
+                y: -10,
                 rotate: [0, -3, 3, -3, 0],
-                transition: { duration: 0.3 }
+                transition: { duration: 0.3 },
               }}
               className="text-center p-10 rounded-3xl glass backdrop-blur-xl border-2 border-white/40 dark:border-slate-700/60 shadow-2xl hover:shadow-[0_30px_60px_rgba(99,102,241,0.4)] transition-all relative overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <motion.div
-                animate={{ 
+                animate={{
                   rotate: [0, 360],
-                  scale: [1, 1.2, 1]
+                  scale: [1, 1.2, 1],
                 }}
                 transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
                 className="absolute -top-8 -right-8 w-24 h-24 bg-gradient-to-br from-indigo-300/30 to-purple-300/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100"
@@ -97,5 +97,3 @@ export function Stats() {
     </section>
   );
 }
-
-

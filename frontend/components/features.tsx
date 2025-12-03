@@ -96,20 +96,26 @@ export function Features() {
               initial={{ opacity: 0, y: 50, scale: 0.9 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ 
-                duration: 0.6, 
+              transition={{
+                duration: 0.6,
                 delay: index * 0.15,
                 type: "spring",
-                stiffness: 100
+                stiffness: 100,
               }}
               whileHover={{ y: -12, scale: 1.02 }}
               className="group"
             >
               <Card className="h-full hover:shadow-[0_25px_50px_-12px_rgba(99,102,241,0.4)] transition-all duration-500 border-2 hover:border-indigo-400 dark:hover:border-indigo-600 glass backdrop-blur-xl overflow-hidden relative">
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}
+                />
                 <motion.div
                   animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
                   className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"
                 />
                 <CardHeader className="relative z-10 pb-4">
@@ -137,5 +143,3 @@ export function Features() {
     </section>
   );
 }
-
-

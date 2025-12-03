@@ -68,7 +68,9 @@ export function Particles() {
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(99, 102, 241, ${0.2 * (1 - distance / 120)})`;
+            ctx.strokeStyle = `rgba(99, 102, 241, ${
+              0.2 * (1 - distance / 120)
+            })`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -97,4 +99,3 @@ export function Particles() {
     />
   );
 }
-

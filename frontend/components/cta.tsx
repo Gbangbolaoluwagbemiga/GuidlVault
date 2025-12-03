@@ -18,7 +18,12 @@ export function CTA() {
           className="relative overflow-hidden rounded-[3rem] bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-16 text-center shadow-[0_30px_60px_rgba(99,102,241,0.5)] animate-pulse-glow"
         >
           {/* Animated background pattern */}
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20" />
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          />
           <motion.div
             animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 4, repeat: Infinity }}
@@ -51,8 +56,8 @@ export function CTA() {
               transition={{ delay: 0.2 }}
               className="text-2xl md:text-3xl text-white/95 mb-12 max-w-3xl mx-auto leading-relaxed font-bold"
             >
-              Join leading protocols using VaultGuard to incentivize security research
-              and protect their users.
+              Join leading protocols using VaultGuard to incentivize security
+              research and protect their users.
             </motion.p>
             <div className="flex flex-col sm:flex-row gap-8 justify-center">
               <motion.div
@@ -108,5 +113,3 @@ export function CTA() {
     </section>
   );
 }
-
-

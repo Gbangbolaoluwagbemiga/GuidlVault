@@ -13,7 +13,7 @@ export function Hero() {
   return (
     <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-screen flex items-center">
       <Particles />
-      
+
       {/* Enhanced animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -81,7 +81,12 @@ export function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, type: "spring", stiffness: 100 }}
+          transition={{
+            duration: 0.7,
+            delay: 0.2,
+            type: "spring",
+            stiffness: 100,
+          }}
           className="text-7xl md:text-9xl font-black mb-8 leading-tight tracking-tight"
         >
           <motion.span
@@ -140,11 +145,13 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="text-2xl md:text-3xl text-slate-700 dark:text-slate-200 mb-12 max-w-4xl mx-auto leading-relaxed font-medium"
         >
-          The <span className="font-bold text-indigo-600">first</span> decentralized bug bounty platform on{" "}
+          The <span className="font-bold text-indigo-600">first</span>{" "}
+          decentralized bug bounty platform on{" "}
           <span className="font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
             Celo
           </span>
-          . Protocols create vaults, researchers submit vulnerabilities, and trusted judges verify submissions.
+          . Protocols create vaults, researchers submit vulnerabilities, and
+          trusted judges verify submissions.
         </motion.p>
 
         <motion.div
@@ -155,9 +162,21 @@ export function Hero() {
         >
           <div className="inline-flex items-center gap-6 px-8 py-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-2 border-indigo-200/50 dark:border-indigo-800/50 shadow-xl">
             {[
-              { icon: "✨", text: "2.5% Fee", color: "from-indigo-500 to-purple-500" },
-              { icon: "🛡️", text: "No Censorship", color: "from-purple-500 to-pink-500" },
-              { icon: "👁️", text: "Fully Transparent", color: "from-pink-500 to-rose-500" },
+              {
+                icon: "✨",
+                text: "2.5% Fee",
+                color: "from-indigo-500 to-purple-500",
+              },
+              {
+                icon: "🛡️",
+                text: "No Censorship",
+                color: "from-purple-500 to-pink-500",
+              },
+              {
+                icon: "👁️",
+                text: "Fully Transparent",
+                color: "from-pink-500 to-rose-500",
+              },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -167,7 +186,9 @@ export function Hero() {
                 className="flex items-center gap-2"
               >
                 <span className="text-2xl">{item.icon}</span>
-                <span className={`text-lg font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}>
+                <span
+                  className={`text-lg font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}
+                >
                   {item.text}
                 </span>
               </motion.div>
@@ -211,15 +232,12 @@ export function Hero() {
               </Button>
             </motion.div>
           </Link>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               size="lg"
               variant="outline"
               onClick={() => open()}
-              className="px-12 py-8 text-xl font-bold border-3 border-indigo-400 dark:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 backdrop-blur-xl glass shadow-xl"
+              className="px-12 py-8 text-xl font-bold border-2 border-indigo-400 dark:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 backdrop-blur-xl glass shadow-xl"
             >
               <Shield className="mr-3 h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               Connect Wallet
@@ -234,19 +252,37 @@ export function Hero() {
           className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto"
         >
           {[
-            { label: "Active Vaults", value: "12+", icon: "🛡️", color: "from-blue-500 to-cyan-500", change: "+3 this month" },
-            { label: "Total Bounties", value: "$50K+", icon: "💰", color: "from-purple-500 to-pink-500", change: "Locked & Secure" },
-            { label: "Researchers", value: "200+", icon: "👥", color: "from-indigo-500 to-purple-500", change: "Active Community" },
+            {
+              label: "Active Vaults",
+              value: "12+",
+              icon: "🛡️",
+              color: "from-blue-500 to-cyan-500",
+              change: "+3 this month",
+            },
+            {
+              label: "Total Bounties",
+              value: "$50K+",
+              icon: "💰",
+              color: "from-purple-500 to-pink-500",
+              change: "Locked & Secure",
+            },
+            {
+              label: "Researchers",
+              value: "200+",
+              icon: "👥",
+              color: "from-indigo-500 to-purple-500",
+              change: "Active Community",
+            },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 40, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ 
-                duration: 0.6, 
+              transition={{
+                duration: 0.6,
                 delay: 1.1 + index * 0.15,
                 type: "spring",
-                stiffness: 100
+                stiffness: 100,
               }}
               whileHover={{ scale: 1.08, y: -8, rotate: [0, -2, 2, 0] }}
               className="text-center p-8 rounded-3xl glass backdrop-blur-xl border-2 border-white/30 dark:border-slate-700/50 shadow-2xl hover:shadow-[0_20px_50px_rgba(99,102,241,0.3)] transition-all relative overflow-hidden group"
@@ -259,7 +295,9 @@ export function Hero() {
               />
               <div className="relative z-10">
                 <div className="text-5xl mb-3">{stat.icon}</div>
-                <div className={`text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-3`}>
+                <div
+                  className={`text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-3`}
+                >
                   {stat.value}
                 </div>
                 <div className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">
