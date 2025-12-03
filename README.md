@@ -187,16 +187,17 @@ vaultGuard.claimPayout(submissionId);
 ### Deployed Contract
 
 **Celo Mainnet:**
+
 - Contract Address: `0x7C1486c50A729DDbf5a812C490a075053522EE43`
 - Explorer: https://celoscan.io/address/0x7C1486c50A729DDbf5a812C490a075053522EE43
 - Platform Fee: 2.5% (250 basis points)
 
 ### Network Information
 
-| Network        | Chain ID | Explorer                                            | RPC URL                                    |
-| -------------- | -------- | --------------------------------------------------- | ------------------------------------------ |
-| Celo Mainnet   | 42220    | [CeloScan](https://celoscan.io)                     | https://forno.celo.org                     |
-| Celo Alfajores | 44787    | [CeloScan Alfajores](https://alfajores.celoscan.io) | https://alfajores-forno.celo-testnet.org   |
+| Network        | Chain ID | Explorer                                            | RPC URL                                  |
+| -------------- | -------- | --------------------------------------------------- | ---------------------------------------- |
+| Celo Mainnet   | 42220    | [CeloScan](https://celoscan.io)                     | https://forno.celo.org                   |
+| Celo Alfajores | 44787    | [CeloScan Alfajores](https://alfajores.celoscan.io) | https://alfajores-forno.celo-testnet.org |
 
 ---
 
