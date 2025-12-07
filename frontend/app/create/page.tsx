@@ -169,102 +169,215 @@ export default function CreateVault() {
             </p>
           </motion.div>
 
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-6 w-6 text-indigo-600" />
-                Vault Configuration
-              </CardTitle>
-              <CardDescription>
-                Configure your bug bounty vault settings
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <Label htmlFor="deposit">Initial Deposit (CELO)</Label>
-                <Input
-                  id="deposit"
-                  type="number"
-                  placeholder="10"
-                  value={formData.deposit}
-                  onChange={(e) =>
-                    setFormData({ ...formData, deposit: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Judges</Label>
-                  <Button variant="outline" size="sm" onClick={addJudge}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add Judge
-                  </Button>
-                </div>
-                {formData.judges.map((judge, index) => (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="border-2 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-300 shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-6 w-6 text-indigo-600" />
+                  Vault Configuration
+                </CardTitle>
+                <CardDescription>
+                  Configure your bug bounty vault settings
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label htmlFor="deposit" className="flex items-center gap-2">
+                    Initial Deposit (CELO)
+                    {errors.deposit && (
+                      <span className="text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.deposit}
+                      </span>
+                    )}
+                  </Label>
                   <Input
-                    key={index}
-                    placeholder="0x..."
-                    value={judge}
-                    onChange={(e) => updateJudge(index, e.target.value)}
-                    className="mb-2"
+                    id="deposit"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="10.0"
+                    value={formData.deposit}
+                    onChange={(e) => {
+                      setFormData({ ...formData, deposit: e.target.value });
+                      if (errors.deposit) {
+                        const newErrors = { ...errors };
+                        delete newErrors.deposit;
+                        setErrors(newErrors);
+                      }
+                    }}
+                    className={errors.deposit ? "border-red-500" : ""}
                   />
-                ))}
-              </div>
+                </div>
 
-              <div>
-                <Label htmlFor="approvals">Required Approvals</Label>
-                <Input
-                  id="approvals"
-                  type="number"
-                  value={formData.requiredApprovals}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      requiredApprovals: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { key: "low", label: "Low (%)" },
-                  { key: "medium", label: "Medium (%)" },
-                  { key: "high", label: "High (%)" },
-                  { key: "critical", label: "Critical (%)" },
-                ].map(({ key, label }) => (
-                  <div key={key}>
-                    <Label>{label}</Label>
-                    <Input
-                      type="number"
-                      value={
-                        formData.payouts[key as keyof typeof formData.payouts]
-                      }
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          payouts: {
-                            ...formData.payouts,
-                            [key]: e.target.value,
-                          },
-                        })
-                      }
-                    />
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="flex items-center gap-2">
+                      Judges
+                      {errors.judges && (
+                        <span className="text-xs text-red-500 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.judges}
+                        </span>
+                      )}
+                    </Label>
+                    <Button variant="outline" size="sm" onClick={addJudge}>
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Judge
+                    </Button>
                   </div>
-                ))}
-              </div>
+                  <AnimatePresence>
+                    {formData.judges.map((judge, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        className="mb-3 flex gap-2"
+                      >
+                        <div className="flex-1">
+                          <Input
+                            placeholder="0x..."
+                            value={judge}
+                            onChange={(e) => updateJudge(index, e.target.value)}
+                            className={errors[`judge-${index}`] ? "border-red-500" : ""}
+                          />
+                          {errors[`judge-${index}`] && (
+                            <span className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                              <AlertCircle className="h-3 w-3" />
+                              {errors[`judge-${index}`]}
+                            </span>
+                          )}
+                        </div>
+                        {formData.judges.length > 1 && (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => removeJudge(index)}
+                            className="hover:bg-red-50 hover:border-red-300 dark:hover:bg-red-950/20"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        )}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
 
-              <Button
-                onClick={createVault}
-                disabled={loading || !isConnected}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                size="lg"
-              >
-                {loading ? "Creating..." : "Create Vault"}
-              </Button>
-            </CardContent>
-          </Card>
+                <div>
+                  <Label htmlFor="approvals" className="flex items-center gap-2">
+                    Required Approvals
+                    {errors.requiredApprovals && (
+                      <span className="text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.requiredApprovals}
+                      </span>
+                    )}
+                  </Label>
+                  <Input
+                    id="approvals"
+                    type="number"
+                    min="1"
+                    value={formData.requiredApprovals}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        requiredApprovals: e.target.value,
+                      });
+                      if (errors.requiredApprovals) {
+                        const newErrors = { ...errors };
+                        delete newErrors.requiredApprovals;
+                        setErrors(newErrors);
+                      }
+                    }}
+                    className={errors.requiredApprovals ? "border-red-500" : ""}
+                  />
+                  <p className="text-xs text-slate-500 mt-1">
+                    Number of judge approvals needed to pay out bounties
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="flex items-center gap-2 mb-3">
+                    <Percent className="h-4 w-4" />
+                    Payout Percentages by Severity
+                    {errors.payouts && (
+                      <span className="text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.payouts}
+                      </span>
+                    )}
+                  </Label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      { key: "low", label: "Low", color: "blue" },
+                      { key: "medium", label: "Medium", color: "yellow" },
+                      { key: "high", label: "High", color: "orange" },
+                      { key: "critical", label: "Critical", color: "red" },
+                    ].map(({ key, label, color }) => (
+                      <div key={key}>
+                        <Label className={`text-${color}-600`}>{label} (%)</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={
+                            formData.payouts[key as keyof typeof formData.payouts]
+                          }
+                          onChange={(e) => {
+                            setFormData({
+                              ...formData,
+                              payouts: {
+                                ...formData.payouts,
+                                [key]: e.target.value,
+                              },
+                            });
+                            if (errors[`payout-${key}`]) {
+                              const newErrors = { ...errors };
+                              delete newErrors[`payout-${key}`];
+                              setErrors(newErrors);
+                            }
+                          }}
+                          className={errors[`payout-${key}`] ? "border-red-500" : ""}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">
+                    Percentage of vault funds to pay for each severity level
+                  </p>
+                </div>
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={loading || !isConnected}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-300"
+                  size="lg"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Shield className="h-5 w-5" />
+                      </motion.div>
+                      Creating Vault...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5" />
+                      Create Vault
+                    </span>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>
