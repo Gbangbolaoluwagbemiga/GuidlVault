@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { usePublicClient } from "wagmi";
 import { ethers } from "ethers";
-import { Shield, DollarSign, Users, TrendingUp, Eye } from "lucide-react";
+import { Shield, DollarSign, Users, TrendingUp, Eye, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,40 +13,13 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/navbar";
-import { VAULT_GUARD_ADDRESS, VAULT_GUARD_ABI } from "@/lib/contract";
+import { useVaults } from "@/hooks/useVaults";
+import { EmptyState, ErrorState } from "@/components/states";
+import { VaultSkeleton } from "@/components/skeletons";
 import Link from "next/link";
 
 export default function Vaults() {
-  const publicClient = usePublicClient();
-  const [vaults, setVaults] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadVaults();
-  }, [publicClient]);
-
-  const loadVaults = async () => {
-    if (!publicClient) return;
-    try {
-      const provider = new ethers.BrowserProvider(publicClient as any);
-      const contract = new ethers.Contract(
-        VAULT_GUARD_ADDRESS,
-        VAULT_GUARD_ABI,
-        provider
-      );
-      const count = await contract.vaultCount();
-      const vaultList = [];
-      for (let i = 0; i < count; i++) {
-        const vault = await contract.vaults(i);
-        vaultList.push({ id: i, ...vault });
-      }
-      setVaults(vaultList);
-    } catch (error) {
-      console.error("Error loading vaults:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { vaults, loading, error, refetch } = useVaults();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
@@ -66,25 +37,39 @@ export default function Vaults() {
             <p className="text-xl text-slate-600 dark:text-slate-300">
               Explore bug bounty vaults from leading protocols
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={refetch}
+              disabled={loading}
+              className="mt-4"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
           </motion.div>
 
-          {loading ? (
-            <div className="text-center py-20">Loading vaults...</div>
+          {error ? (
+            <ErrorState message={error} retry={refetch} />
+          ) : loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <VaultSkeleton key={i} />
+              ))}
+            </div>
           ) : vaults.length === 0 ? (
-            <Card className="text-center py-20">
-              <CardContent>
-                <Shield className="h-16 w-16 mx-auto mb-4 text-slate-400" />
-                <h3 className="text-2xl font-bold mb-2">No Vaults Yet</h3>
-                <p className="text-slate-600 dark:text-slate-300 mb-6">
-                  Be the first to create a bug bounty vault!
-                </p>
+            <EmptyState
+              icon={<Shield className="h-16 w-16 text-slate-400" />}
+              title="No Vaults Yet"
+              description="Be the first to create a bug bounty vault!"
+              action={
                 <Link href="/create">
-                  <Button className="bg-gradient-to-r from-indigo-600 to-purple-600">
+                  <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
                     Create Vault
                   </Button>
                 </Link>
-              </CardContent>
-            </Card>
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {vaults.map((vault, index) => (
@@ -92,51 +77,63 @@ export default function Vaults() {
                   key={vault.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 >
-                  <Card className="h-full hover:shadow-xl transition-shadow border-2 hover:border-indigo-300">
+                  <Card className="h-full hover:shadow-2xl transition-all duration-300 border-2 hover:border-indigo-300 dark:hover:border-indigo-700 group">
                     <CardHeader>
                       <div className="flex items-center justify-between mb-2">
-                        <CardTitle>Vault #{vault.id}</CardTitle>
-                        <Badge variant={vault.active ? "default" : "secondary"}>
+                        <CardTitle className="flex items-center gap-2">
+                          <Shield className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                          Vault #{vault.id}
+                        </CardTitle>
+                        <Badge 
+                          variant={vault.active ? "default" : "secondary"}
+                          className={vault.active ? "animate-pulse" : ""}
+                        >
                           {vault.active ? "Active" : "Closed"}
                         </Badge>
                       </div>
-                      <CardDescription>
-                        {vault.protocol.slice(0, 6)}...
-                        {vault.protocol.slice(-4)}
+                      <CardDescription className="font-mono text-xs">
+                        {vault.protocol.slice(0, 8)}...
+                        {vault.protocol.slice(-6)}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                          <DollarSign className="h-4 w-4" />
-                          <span className="text-sm">Total</span>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-900/50 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950/30 transition-colors">
+                          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                            <DollarSign className="h-4 w-4" />
+                            <span className="text-sm font-medium">Total</span>
+                          </div>
+                          <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                            {parseFloat(ethers.formatEther(vault.totalDeposit)).toFixed(2)} CELO
+                          </span>
                         </div>
-                        <span className="font-bold">
-                          {ethers.formatEther(vault.totalDeposit)} CELO
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                          <TrendingUp className="h-4 w-4" />
-                          <span className="text-sm">Remaining</span>
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-900/50 group-hover:bg-purple-50 dark:group-hover:bg-purple-950/30 transition-colors">
+                          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                            <TrendingUp className="h-4 w-4" />
+                            <span className="text-sm font-medium">Remaining</span>
+                          </div>
+                          <span className="font-bold text-purple-600 dark:text-purple-400">
+                            {parseFloat(ethers.formatEther(vault.remainingFunds)).toFixed(2)} CELO
+                          </span>
                         </div>
-                        <span className="font-bold">
-                          {ethers.formatEther(vault.remainingFunds)} CELO
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                          <Users className="h-4 w-4" />
-                          <span className="text-sm">Approvals</span>
+                        <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-900/50 group-hover:bg-pink-50 dark:group-hover:bg-pink-950/30 transition-colors">
+                          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                            <Users className="h-4 w-4" />
+                            <span className="text-sm font-medium">Approvals</span>
+                          </div>
+                          <span className="font-bold text-pink-600 dark:text-pink-400">
+                            {vault.requiredApprovals}
+                          </span>
                         </div>
-                        <span className="font-bold">
-                          {vault.requiredApprovals.toString()}
-                        </span>
                       </div>
-                      <Link href={`/vaults/${vault.id}`}>
-                        <Button className="w-full" variant="outline">
+                      <Link href={`/vaults/${vault.id}`} className="block">
+                        <Button 
+                          className="w-full group-hover:bg-gradient-to-r group-hover:from-indigo-600 group-hover:to-purple-600 transition-all duration-300" 
+                          variant="outline"
+                        >
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </Button>
