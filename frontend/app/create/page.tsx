@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { motion, AnimatePresence } from "framer-motion";
 import { ethers } from "ethers";
-import { Shield, Plus, Users, Percent } from "lucide-react";
+import { Shield, Plus, Users, Percent, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,20 +15,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Navbar } from "@/components/navbar";
-import { VAULT_GUARD_ADDRESS, VAULT_GUARD_ABI } from "@/lib/contract";
+import { useVaultGuard } from "@/hooks/useVaultGuard";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function CreateVault() {
-  const { address, isConnected } = useAccount();
-  const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { loading, createVault, isConnected } = useVaultGuard();
   const [formData, setFormData] = useState({
     deposit: "",
     judges: [""],
     requiredApprovals: "2",
     payouts: { low: "1", medium: "5", high: "20", critical: "50" },
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addJudge = () => {
     setFormData({
@@ -38,64 +38,116 @@ export default function CreateVault() {
     });
   };
 
+  const removeJudge = (index: number) => {
+    const newJudges = formData.judges.filter((_, i) => i !== index);
+    setFormData({ ...formData, judges: newJudges.length ? newJudges : [""] });
+  };
+
   const updateJudge = (index: number, value: string) => {
     const newJudges = [...formData.judges];
     newJudges[index] = value;
     setFormData({ ...formData, judges: newJudges });
+    
+    // Clear error for this judge
+    if (errors[`judge-${index}`]) {
+      const newErrors = { ...errors };
+      delete newErrors[`judge-${index}`];
+      setErrors(newErrors);
+    }
   };
 
-  const createVault = async () => {
-    if (!isConnected || !walletClient) {
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    // Validate deposit
+    if (!formData.deposit || parseFloat(formData.deposit) <= 0) {
+      newErrors.deposit = "Deposit must be greater than 0";
+    }
+
+    // Validate judges
+    const validJudges = formData.judges.filter((j) => j && ethers.isAddress(j));
+    formData.judges.forEach((judge, index) => {
+      if (judge && !ethers.isAddress(judge)) {
+        newErrors[`judge-${index}`] = "Invalid Ethereum address";
+      }
+    });
+
+    if (validJudges.length === 0) {
+      newErrors.judges = "Please add at least one valid judge address";
+    }
+
+    // Validate required approvals
+    const approvals = parseInt(formData.requiredApprovals);
+    if (isNaN(approvals) || approvals < 1) {
+      newErrors.requiredApprovals = "Must be at least 1";
+    } else if (approvals > validJudges.length) {
+      newErrors.requiredApprovals = "Cannot exceed number of judges";
+    }
+
+    // Validate payouts
+    const payoutSum = 
+      parseInt(formData.payouts.low) +
+      parseInt(formData.payouts.medium) +
+      parseInt(formData.payouts.high) +
+      parseInt(formData.payouts.critical);
+
+    if (payoutSum > 100) {
+      newErrors.payouts = "Total payouts cannot exceed 100%";
+    }
+
+    Object.entries(formData.payouts).forEach(([key, value]) => {
+      const val = parseInt(value);
+      if (isNaN(val) || val < 0 || val > 100) {
+        newErrors[`payout-${key}`] = "Must be 0-100%";
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!isConnected) {
       toast.error("Please connect your wallet");
       return;
     }
 
-    const validJudges = formData.judges.filter((j) => ethers.isAddress(j));
-    if (validJudges.length === 0) {
-      toast.error("Please add at least one valid judge address");
+    if (!validateForm()) {
+      toast.error("Please fix the form errors");
       return;
     }
 
-    if (parseInt(formData.requiredApprovals) > validJudges.length) {
-      toast.error("Required approvals cannot exceed number of judges");
-      return;
-    }
+    const validJudges = formData.judges.filter((j) => ethers.isAddress(j));
+
+    const payouts: [number, number, number, number] = [
+      parseInt(formData.payouts.low) * 100, // Convert to basis points
+      parseInt(formData.payouts.medium) * 100,
+      parseInt(formData.payouts.high) * 100,
+      parseInt(formData.payouts.critical) * 100,
+    ];
 
     try {
-      setLoading(true);
-      if (!publicClient || !walletClient) {
-        toast.error("Wallet not available");
-        return;
-      }
-      const provider = new ethers.BrowserProvider(walletClient as any);
-      const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        VAULT_GUARD_ADDRESS,
-        VAULT_GUARD_ABI,
-        signer
-      );
-
-      const payouts = [
-        parseInt(formData.payouts.low) * 100, // Convert to basis points
-        parseInt(formData.payouts.medium) * 100,
-        parseInt(formData.payouts.high) * 100,
-        parseInt(formData.payouts.critical) * 100,
-      ];
-
-      const tx = await contract.createVault(
+      await createVault(
         validJudges,
-        formData.requiredApprovals,
+        parseInt(formData.requiredApprovals),
         payouts,
-        { value: ethers.parseEther(formData.deposit) }
+        formData.deposit
       );
-
-      toast.success("Transaction submitted! Waiting for confirmation...");
-      await tx.wait();
-      toast.success("Vault created successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create vault");
-    } finally {
-      setLoading(false);
+      
+      // Reset form
+      setFormData({
+        deposit: "",
+        judges: [""],
+        requiredApprovals: "2",
+        payouts: { low: "1", medium: "5", high: "20", critical: "50" },
+      });
+      
+      // Redirect to vaults page
+      setTimeout(() => {
+        router.push("/vaults");
+      }, 2000);
+    } catch (error) {
+      // Error is already handled in the hook
     }
   };
 
