@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Component, ReactNode } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle } from "lucide-react";
