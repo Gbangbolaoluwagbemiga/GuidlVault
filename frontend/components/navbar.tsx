@@ -53,6 +53,13 @@ export function Navbar() {
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300" />
             </Link>
             <Link
+              href="/judge"
+              className="text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all font-medium hover:scale-105 relative group"
+            >
+              Judge Portal
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300" />
+            </Link>
+            <Link
               href="/create"
               className="text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all font-medium hover:scale-105 relative group"
             >
@@ -104,31 +111,42 @@ export function Navbar() {
             <Link
               href="/vaults"
               className="block text-slate-600 dark:text-slate-300"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Vaults
             </Link>
             <Link
               href="/dashboard"
               className="block text-slate-600 dark:text-slate-300"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Dashboard
             </Link>
             <Link
+              href="/judge"
+              className="block text-slate-600 dark:text-slate-300"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Judge Portal
+            </Link>
+            <Link
               href="/create"
               className="block text-slate-600 dark:text-slate-300"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Create Vault
             </Link>
             <Link
               href="/submit"
               className="block text-slate-600 dark:text-slate-300"
+              onClick={() => setMobileMenuOpen(false)}
             >
               Submit
             </Link>
             <div className="flex items-center gap-4">
               <ThemeToggle />
               <Button onClick={() => open()} className="flex-1">
-                {isConnected ? "Disconnect" : "Connect Wallet"}
+                {isConnected ? `${address?.slice(0, 6)}...${address?.slice(-4)}` : "Connect Wallet"}
               </Button>
             </div>
           </div>
