@@ -5,6 +5,11 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
+interface IReputationSBT {
+    function mintResearcher(address to) external;
+    function mintJudge(address to) external;
+}
+
 /**
  * @title VaultGuard
  * @notice Decentralized bug bounty platform where protocols deposit funds
@@ -104,10 +109,6 @@ contract VaultGuard is ReentrancyGuard {
         reputationSBT = _sbt;
     }
 
-    interface IReputationSBT {
-        function mintResearcher(address to) external;
-        function mintJudge(address to) external;
-    }
     
     /**
      * @notice Create a new bug bounty vault
