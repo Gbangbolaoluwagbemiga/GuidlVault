@@ -292,7 +292,6 @@ contract VaultGuard is ReentrancyGuard {
         
         uint256 researcherPayout = submission.payoutAmount;
         uint256 vaultId = submission.vaultId;
-        BountyVault storage vault = vaults[vaultId];
         VaultAsset memory asset = vaultAssets[vaultId];
         uint256 platformCut = submission.platformFeeAmount;
         
