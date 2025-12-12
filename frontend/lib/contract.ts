@@ -1,13 +1,21 @@
 // VaultGuard Contract ABI and Address
-export const VAULT_GUARD_ADDRESS = "0x7C1486c50A729DDbf5a812C490a075053522EE43";
+export const VAULT_GUARD_ADDRESS = "0x374083Da98352b7895E8CB2faD74c068962d17d7";
 
 export const VAULT_GUARD_ABI = [
   "function createVault(address[] memory _judges, uint256 _requiredApprovals, uint256[4] memory _payouts) external payable returns (uint256)",
   "function depositFunds(uint256 _vaultId) external payable",
+  "function createERC20Vault(address _token, address[] memory _judges, uint256 _requiredApprovals, uint256[4] memory _payouts, uint256 _initialAmount) external returns (uint256)",
+  "function depositFundsERC20(uint256 _vaultId, uint256 _amount) external",
   "function submitVulnerability(uint256 _vaultId, string memory _reportHash, uint8 _severity) external returns (uint256)",
+  "function commitSubmission(uint256 _vaultId, bytes32 _commit) external returns (uint256)",
+  "function revealSubmission(uint256 _submissionId, string memory _reportHash, uint8 _severity, bytes32 _salt) external",
   "function voteOnSubmission(uint256 _submissionId, bool _approved) external",
+  "function submitAggregatedVotes(uint256 _submissionId, address[] calldata _judges, bytes[] calldata _signatures) external",
+  "function finalizeSubmission(uint256 _submissionId) external",
   "function claimPayout(uint256 _submissionId) external",
   "function closeVault(uint256 _vaultId) external",
+  "function setMinPayouts(uint256 _vaultId, uint256[4] memory _mins) external",
+  "function setReputationSBT(address _sbt) external",
   "function getVaultJudges(uint256 _vaultId) external view returns (address[])",
   "function getVaultSubmissions(uint256 _vaultId) external view returns (uint256[])",
   "function getSubmissionDetails(uint256 _submissionId) external view returns (uint256 vaultId, address researcher, string memory reportHash, uint8 severity, uint8 status, uint256 approvalCount, uint256 payoutAmount)",
@@ -22,4 +30,3 @@ export const VAULT_GUARD_ABI = [
   "event SubmissionRejected(uint256 indexed submissionId)",
   "event PayoutSent(uint256 indexed submissionId, address indexed researcher, uint256 amount)",
 ] as const;
-

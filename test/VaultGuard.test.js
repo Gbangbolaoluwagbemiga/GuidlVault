@@ -214,6 +214,54 @@ describe("VaultGuard", function () {
     });
   });
 
+  describe("Aggregated Votes", function () {
+    it("Approves via aggregated EIP712 signatures", async function () {
+      const judges = [judge1.address, judge2.address, judge3.address];
+      await vaultGuard.connect(protocol).createVault(judges, 2, PAYOUTS, { value: VAULT_DEPOSIT });
+      await vaultGuard.connect(researcher1).submitVulnerability(0, "QmAgg", 2);
+
+      const domain = {
+        name: "VaultGuard",
+        version: "1",
+        chainId: (await ethers.provider.getNetwork()).chainId,
+        verifyingContract: await vaultGuard.getAddress(),
+      };
+      const types = {
+        Vote: [
+          { name: "submissionId", type: "uint256" },
+          { name: "judge", type: "address" },
+          { name: "approved", type: "bool" },
+        ],
+      };
+      const value1 = { submissionId: 0, judge: judge1.address, approved: true };
+      const value2 = { submissionId: 0, judge: judge2.address, approved: true };
+      const sig1 = await judge1.signTypedData(domain, types, value1);
+      const sig2 = await judge2.signTypedData(domain, types, value2);
+
+      await expect(
+        vaultGuard.submitAggregatedVotes(0, [judge1.address, judge2.address], [sig1, sig2])
+      ).to.emit(vaultGuard, "SubmissionApproved");
+
+      const details = await vaultGuard.getSubmissionDetails(0);
+      expect(details.status).to.equal(1);
+    });
+  });
+
+  describe("Min Payout Floors", function () {
+    it("Uses min payout when percentage is lower", async function () {
+      const judges = [judge1.address, judge2.address];
+      const payouts = [100, 200, 300, 400];
+      await vaultGuard.connect(protocol).createVault(judges, 2, payouts, { value: VAULT_DEPOSIT });
+      await vaultGuard.connect(protocol).setMinPayouts(0, [ethers.parseEther("1"), 0, 0, 0]);
+      await vaultGuard.connect(researcher1).submitVulnerability(0, "QmMin", 0);
+      await vaultGuard.connect(judge1).voteOnSubmission(0, true);
+      await vaultGuard.connect(judge2).voteOnSubmission(0, true);
+
+      const details = await vaultGuard.getSubmissionDetails(0);
+      expect(details.payoutAmount).to.equal(ethers.parseEther("1") - (ethers.parseEther("1") * BigInt(PLATFORM_FEE) / BigInt(10000)));
+    });
+  });
+
   describe("Payouts", function () {
     beforeEach(async function () {
       const judges = [judge1.address, judge2.address];
@@ -305,6 +353,5 @@ describe("VaultGuard", function () {
     });
   });
 });
-
 
 
