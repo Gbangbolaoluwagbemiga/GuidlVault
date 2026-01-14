@@ -11,6 +11,8 @@ interface IReputationSBT {
     function mintJudge(address to) external;
 }
 
+import "./IYieldStrategy.sol";
+
 /**
  * @title VaultGuard
  * @notice Decentralized bug bounty platform where protocols deposit funds
@@ -34,6 +36,7 @@ contract VaultGuard is ReentrancyGuard, EIP712 {
         uint256 requiredApprovals;
         mapping(Severity => uint256) payoutPercentages; // percentage of totalDeposit
         mapping(Severity => uint256) minPayouts;
+        address yieldStrategy;
     }
     
     struct Submission {
@@ -195,15 +198,49 @@ contract VaultGuard is ReentrancyGuard, EIP712 {
         vaults[_vaultId].remainingFunds += msg.value;
         
         emit FundsDeposited(_vaultId, msg.value);
+        emit FundsDeposited(_vaultId, msg.value);
+    }
+    
+    function setYieldStrategy(uint256 _vaultId, address _strategy) external onlyProtocol(_vaultId) {
+        BountyVault storage vault = vaults[_vaultId];
+        VaultAsset memory asset = vaultAssets[_vaultId];
+        require(!asset.isNative, "Native vaults not supported");
+        
+        // If there was a previous strategy, withdraw everything first
+        if (vault.yieldStrategy != address(0)) {
+            uint256 balance = IYieldStrategy(vault.yieldStrategy).balanceOf(address(this));
+            if (balance > 0) {
+                IYieldStrategy(vault.yieldStrategy).withdraw(balance, address(this));
+            }
+        }
+        
+        vault.yieldStrategy = _strategy;
+        
+        // Deposit existing funds into new strategy if set
+        if (_strategy != address(0)) {
+            require(IYieldStrategy(_strategy).asset() == asset.token, "Invalid strategy asset");
+            IERC20(asset.token).approve(_strategy, vault.remainingFunds);
+            IYieldStrategy(_strategy).deposit(vault.remainingFunds);
+        }
     }
 
     function depositFundsERC20(uint256 _vaultId, uint256 _amount) external onlyProtocol(_vaultId) vaultActive(_vaultId) {
         require(_amount > 0, "Must send funds");
         VaultAsset memory asset = vaultAssets[_vaultId];
         require(!asset.isNative && asset.token != address(0), "Invalid vault asset");
+        
         IERC20(asset.token).safeTransferFrom(msg.sender, address(this), _amount);
-        vaults[_vaultId].totalDeposit += _amount;
-        vaults[_vaultId].remainingFunds += _amount;
+        
+        BountyVault storage vault = vaults[_vaultId];
+        vault.totalDeposit += _amount;
+        vault.remainingFunds += _amount;
+        
+        // Auto-deposit to strategy if set
+        if (vault.yieldStrategy != address(0)) {
+            IERC20(asset.token).approve(vault.yieldStrategy, _amount);
+            IYieldStrategy(vault.yieldStrategy).deposit(_amount);
+        }
+        
         emit FundsDeposited(_vaultId, _amount);
     }
     
@@ -415,8 +452,15 @@ contract VaultGuard is ReentrancyGuard, EIP712 {
         
         uint256 researcherPayout = submission.payoutAmount;
         uint256 vaultId = submission.vaultId;
+        BountyVault storage vault = vaults[vaultId];
         VaultAsset memory asset = vaultAssets[vaultId];
         uint256 platformCut = submission.platformFeeAmount;
+        uint256 totalNeeded = researcherPayout + platformCut;
+
+        // If strategy exists, withdraw needed funds
+        if (vault.yieldStrategy != address(0) && !asset.isNative) {
+             IYieldStrategy(vault.yieldStrategy).withdraw(totalNeeded, address(this));
+        }
         
         // Transfer funds
         if (asset.isNative) {
