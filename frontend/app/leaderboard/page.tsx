@@ -37,13 +37,14 @@ export default function LeaderboardPage() {
 
                 const stats: Record<string, { total: bigint; count: number }> = {};
 
-                logs.forEach((log) => {
+                logs.forEach((log: any) => {
                     const { researcher, amount } = log.args;
                     if (researcher && amount) {
+                        const amountBi = BigInt(amount);
                         if (!stats[researcher]) {
                             stats[researcher] = { total: 0n, count: 0 };
                         }
-                        stats[researcher].total += amount;
+                        stats[researcher].total += amountBi;
                         stats[researcher].count += 1;
                     }
                 });
