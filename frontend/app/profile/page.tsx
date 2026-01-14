@@ -48,7 +48,7 @@ export default function ProfilePage() {
                 // Better: Listen to PayoutSent (Paid/Approved) and SubmissionRejected events for these IDs?
                 // Or just `getSubmissionDetails` for each.
 
-                const promises = createdLogs.map(async (log) => {
+                const promises = createdLogs.map(async (log: any) => {
                     const id = log.args.submissionId;
                     if (id === undefined) return;
                     const details = await publicClient.readContract({
@@ -56,7 +56,7 @@ export default function ProfilePage() {
                         abi: VAULT_GUARD_ABI,
                         functionName: "getSubmissionDetails",
                         args: [id]
-                    });
+                    }) as readonly [bigint, string, string, number, number, bigint, bigint];
                     // Status: 0=PENDING, 1=APPROVED, 2=REJECTED, 3=PAID
                     const status = details[4];
                     if (status === 0) pendingCount++;
